@@ -58,12 +58,12 @@ async function run() {
             res.send({ result, token });
         });
         // get all orders api
-        app.get('/orders', async (req, res) => {
+        app.get('/orders', verifyJWT, async (req, res) => {
             const orders = await orderCollection.find().toArray();
             res.send(orders)
         });
         // order by email
-        app.get('/myorders', async (req, res) => {
+        app.get('/myorders', verifyJWT, async (req, res) => {
             const user = req.query.user;
             const decodedEmail = req.decoded.email;
             if (user === decodedEmail) {
