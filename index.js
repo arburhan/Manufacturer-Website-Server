@@ -40,6 +40,11 @@ async function run() {
         const orderCollection = client.db('Power_Tools').collection('orders');
 
         // users api
+        app.get('/users', async (req, res) => {
+            const users = await usersCollection.find().toArray();
+            res.send(users);
+        });
+
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -69,9 +74,10 @@ async function run() {
         app.post('/order', async (req, res) => {
             const order = req.body;
             const query = { productName: order.productName, email: order.email, quantity: order.quantity };
-            const result = await orderCollection.insertOne(order);
+            const result = await orderCollection.insertOne(query);
             res.send(result);
-        })
+        });
+
 
     }
     finally {
