@@ -44,7 +44,7 @@ async function run() {
             const users = await usersCollection.find().toArray();
             res.send(users);
         });
-
+        // update users
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -57,6 +57,11 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             res.send({ result, token });
         });
+        // get all orders api
+        app.get('/orders', async (req, res) => {
+            const orders = await orderCollection.find().toArray();
+            res.send(orders)
+        })
 
         // get all api
         app.get('/tools', async (req, res) => {
