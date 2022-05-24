@@ -37,6 +37,7 @@ async function run() {
         await client.connect();
         const toolsCollection = client.db('Power_Tools').collection('Tools');
         const usersCollection = client.db('Power_Tools').collection('users');
+        const orderCollection = client.db('Power_Tools').collection('orders');
 
         // users api
         app.put('/user/:email', async (req, res) => {
@@ -56,13 +57,20 @@ async function run() {
         app.get('/tools', async (req, res) => {
             const tools = await toolsCollection.find().toArray();
             res.send(tools);
-        })
+        });
         // get by id api
         app.get('/tools/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const purchase = await toolsCollection.findOne(query);
             res.send(purchase);
+        });
+
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const query = { productName: order.productName, email: order.email, quantity: order.quantity };
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
         })
 
     }
