@@ -63,17 +63,11 @@ async function run() {
             res.send(orders)
         });
         // order by email
-        app.get('/myorders', verifyJWT, async (req, res) => {
-            const user = req.query.user;
-            const decodedEmail = req.decoded.email;
-            if (user === decodedEmail) {
-                const query = { user: user };
-                const orders = orderCollection.find(query).toArray();
-                return res.send(orders);
-            }
-            else {
-                return res.status(403).send({ message: 'Forbidden Access' });
-            }
+        app.get('/myorders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const order = await orderCollection.find(query).toArray();
+            res.send(order);
         });
 
         // get all api
@@ -88,10 +82,14 @@ async function run() {
             const purchase = await toolsCollection.findOne(query);
             res.send(purchase);
         });
+        // app.put('/tools/:id', async (req, res) => {
+        //     const id = req.params.id;
+
+        // })
 
         app.post('/order', async (req, res) => {
             const order = req.body;
-            const query = { productName: order.productName, email: order.email, quantity: order.quantity };
+            const query = { productName: order.productName, email: order.email, quantity: order.quantity, totalPrice: order.totalPrice };
             const result = await orderCollection.insertOne(query);
             res.send(result);
         });
