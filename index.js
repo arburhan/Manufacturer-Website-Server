@@ -91,16 +91,12 @@ async function run() {
             res.send(tools);
         });
         // get by id api
-        app.get('/tools/:id', verifyJWT, async (req, res) => {
+        app.get('/tools/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const purchase = await toolsCollection.findOne(query);
             res.send(purchase);
         });
-        // app.put('/tools/:id', async (req, res) => {
-        //     const id = req.params.id;
-
-        // })
 
         app.post('/order', async (req, res) => {
             const order = req.body;
@@ -127,18 +123,17 @@ async function run() {
         })
 
         // update
-        // app.put('/tools', async (req, res) => {
-        //     const id = req.params.id;
-        //     const filter = { _id: ObjectId(id) };
-        //     const tools = req.body;
-        //     const options = { upsert: true };
-        //     const updateDoc = {
-        //         $set: tools,
-        //     };
-        //     const result = await toolsCollection.updateOne(filter, updateDoc, options);
-        //     res.send(result);
+        app.patch('/tools/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const tools = req.body;
+            const updateDoc = {
+                $set: tools.availableQuantity,
+            };
+            const result = await toolsCollection.updateOne(filter, updateDoc);
+            res.send(result);
 
-        // });
+        });
 
 
     }
