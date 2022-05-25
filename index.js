@@ -16,21 +16,18 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // jwt
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-
-
     if (!authHeader) {
-        return res.status(401).send({ message: 'unAthorized Access' });
+        return res.status(401).send({ message: 'UnAuthorized access' });
     }
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    jwt.verify(token, 'f5f9eaa14e63f194736e79984e9bd840228db6c99be592792f7befbbcbac3765fee51967ae0499a3010c64fb4a31733105036e2c166c59666f35c44ac93fe513', function (err, decoded) {
         if (err) {
-            return res.status(403).send({ message: 'Forbidden Access' });
+            return res.status(403).send({ message: 'Forbidden access' })
         }
         req.decoded = decoded;
         next();
-    })
+    });
 }
-
 // api
 async function run() {
     try {
@@ -69,14 +66,21 @@ async function run() {
             const order = await orderCollection.find(query).toArray();
             res.send(order);
         });
+        // delete order
+        app.delete('/order/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(filter);
+            res.send(result);
+        });
 
         // get all api
-        app.get('/tools', async (req, res) => {
+        app.get('/tools', verifyJWT, async (req, res) => {
             const tools = await toolsCollection.find().toArray();
             res.send(tools);
         });
         // get by id api
-        app.get('/tools/:id', async (req, res) => {
+        app.get('/tools/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const purchase = await toolsCollection.findOne(query);
