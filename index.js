@@ -100,9 +100,13 @@ async function run() {
         });
         app.post('/review', async (req, res) => {
             const review = req.body;
-            const query = { email: review.email, name: review.name, description: review.description, rating: review.rating };
+            const query = { email: review.email, image: review.image, name: review.name, description: review.description, rating: review.rating };
             const result = await reviewCollection.insertOne(query);
             res.send(result);
+        });
+        app.get('/reviews', verifyJWT, async (req, res) => {
+            const reviews = await reviewCollection.find().toArray();
+            res.send(reviews);
         });
 
 
