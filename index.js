@@ -20,7 +20,7 @@ function verifyJWT(req, res, next) {
         return res.status(401).send({ message: 'UnAuthorized access' });
     }
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, 'f5f9eaa14e63f194736e79984e9bd840228db6c99be592792f7befbbcbac3765fee51967ae0499a3010c64fb4a31733105036e2c166c59666f35c44ac93fe513', function (err, decoded) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: 'Forbidden access' })
         }
@@ -35,6 +35,7 @@ async function run() {
         const toolsCollection = client.db('Power_Tools').collection('Tools');
         const usersCollection = client.db('Power_Tools').collection('users');
         const orderCollection = client.db('Power_Tools').collection('orders');
+        const reviewCollection = client.db('Power_Tools').collection('reviews');
 
         // users api
         app.get('/users', async (req, res) => {
@@ -95,6 +96,12 @@ async function run() {
             const order = req.body;
             const query = { productName: order.productName, email: order.email, quantity: order.quantity, totalPrice: order.totalPrice };
             const result = await orderCollection.insertOne(query);
+            res.send(result);
+        });
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const query = { email: review.email, name: review.name, description: review.description, rating: review.rating };
+            const result = await reviewCollection.insertOne(query);
             res.send(result);
         });
 
