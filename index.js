@@ -118,6 +118,27 @@ async function run() {
             const reviews = await reviewCollection.find().toArray();
             res.send(reviews);
         });
+        // add product 
+        app.post('/tools', async (req, res) => {
+            const tools = req.body;
+            const query = { name: tools.name, description: tools.description, availableQuantity: tools.availableQuantity, minimumQuantity: tools.availableQuantity, unitPrice: tools.unitPrice, image: tools.image };
+            const result = await toolsCollection.insertOne(query);
+            res.send(result);
+        })
+
+        // update
+        // app.put('/tools', async (req, res) => {
+        //     const id = req.params.id;
+        //     const filter = { _id: ObjectId(id) };
+        //     const tools = req.body;
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: tools,
+        //     };
+        //     const result = await toolsCollection.updateOne(filter, updateDoc, options);
+        //     res.send(result);
+
+        // });
 
 
     }
