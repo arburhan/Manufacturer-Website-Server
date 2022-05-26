@@ -57,6 +57,15 @@ async function run() {
             const users = await usersCollection.find().toArray();
             res.send(users);
         });
+        // get specific user 
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email)
+            const query = { email: email }
+            const user = await usersCollection.findOne(query);
+            console.log(user)
+            res.send(user);
+        })
         // update users
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
