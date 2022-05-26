@@ -173,17 +173,21 @@ async function run() {
             res.send(result);
         })
 
-        // update
-        app.patch('/tools/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) };
-            const tools = req.body;
-            const updateDoc = {
-                $set: tools.availableQuantity,
-            };
-            const result = await toolsCollection.updateOne(filter, updateDoc);
-            res.send(result);
-
+        // update quantity
+        app.put('/tool/:id', async (req, res) => {
+            const id = req.body.id;
+            const reduceQuantity = req.body.quantity;
+            const query = { _id: ObjectId(id) };
+            const product = await toolsCollection.findOne(query);
+            const updateQuantity = await toolsCollection.updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: {
+                        "availableQuantity": (parseInt(product.availableQuantity) - parseInt(reduceQuantity))
+                    }
+                }
+            );
+            res.send(updateQuantity);
         });
 
 
