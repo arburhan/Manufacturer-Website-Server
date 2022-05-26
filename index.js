@@ -38,6 +38,7 @@ async function run() {
         const orderCollection = client.db('Power_Tools').collection('orders');
         const reviewCollection = client.db('Power_Tools').collection('reviews');
         const paymentCollection = client.db('Power_Tools').collection('payment');
+        const userProfileCollection = client.db('Power_Tools').collection('userProfile');
 
         // PAYMENTS
         app.post('/create-payment-intent', async (req, res) => {
@@ -63,7 +64,6 @@ async function run() {
             console.log(email)
             const query = { email: email }
             const user = await usersCollection.findOne(query);
-            console.log(user)
             res.send(user);
         })
         // update users
@@ -80,7 +80,7 @@ async function run() {
             res.send({ result, token });
         });
         // my profile
-        app.put('myprofile/:email', async (req, res) => {
+        app.put('/myprofile/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
             const filter = { email: email };
@@ -91,7 +91,7 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updateDoc, options);
             res.send(result);
 
-        })
+        });
         // make admin
         app.put('/user/admin/:email', async (req, res) => {
             const email = req.params.email;
