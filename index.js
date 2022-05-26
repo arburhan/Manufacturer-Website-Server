@@ -55,17 +55,17 @@ async function run() {
         // verify admin
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
-            const requesterAccount = await userProfileCollection.findOne({ email: requester });
+            const requesterAccount = await usersCollection.findOne({ email: requester });
             if (requesterAccount.role === 'admin') {
                 next();
             }
             else {
                 res.status(403).send({ message: 'forbidden' });
-            };
-        };
+            }
+        }
 
         // users api
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyAdmin, async (req, res) => {
             const users = await usersCollection.find().toArray();
             res.send(users);
         });
@@ -111,9 +111,15 @@ async function run() {
             }
             const result = await usersCollection.updateOne(filter, updateDoc);
             res.send(result);
+        });
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await usersCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin });
         })
         // get all orders api
-        app.get('/orders', verifyJWT, async (req, res) => {
+        app.get('/orders', verifyJWT, verifyAdmin, async (req, res) => {
             const orders = await orderCollection.find().toArray();
             res.send(orders)
         });
