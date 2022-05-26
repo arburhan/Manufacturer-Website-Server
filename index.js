@@ -129,7 +129,7 @@ async function run() {
             res.send(updateOrder)
         })
         // delete order
-        app.delete('/order/:id', verifyJWT, async (req, res) => {
+        app.delete('/order/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await orderCollection.deleteOne(filter);
@@ -163,7 +163,7 @@ async function run() {
         });
         app.get('/reviews', async (req, res) => {
             const reviews = await reviewCollection.find().toArray();
-            res.send(reviews);
+            res.send(reviews.reverse());
         });
         // add product 
         app.post('/tools', async (req, res) => {
