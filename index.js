@@ -65,7 +65,7 @@ async function run() {
         }
 
         // users api
-        app.get('/users', verifyAdmin, async (req, res) => {
+        app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
             const users = await usersCollection.find().toArray();
             res.send(users);
         });
@@ -152,13 +152,25 @@ async function run() {
             const result = await paymentCollection.insertOne(payment);
             const updateOrder = await orderCollection.updateOne(filter, updateDoc);
             res.send(updateOrder)
-        })
+        });
         // delete order
         app.delete('/order/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await orderCollection.deleteOne(filter);
             res.send(result);
+        });
+        // update shipment status
+        app.patch('/shipmentOrder/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    shipment: true,
+                }
+            }
+            const updateOrder = await orderCollection.updateOne(filter, updateDoc);
+            res.send(updateOrder)
         });
 
         // get all api
@@ -183,10 +195,11 @@ async function run() {
         // create order api
         app.post('/order', async (req, res) => {
             const order = req.body;
-            const query = { productName: order.productName, email: order.email, quantity: order.quantity, totalPrice: order.totalPrice };
+            const query = { productName: order.productName, email: order.email, quantity: order.quantity, totalPrice: order.totalPrice, address: order.address };
             const result = await orderCollection.insertOne(query);
             res.send(result);
         });
+
         // create review
         app.post('/review', async (req, res) => {
             const review = req.body;
