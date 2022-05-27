@@ -166,6 +166,13 @@ async function run() {
             const tools = await toolsCollection.find().toArray();
             res.send(tools);
         });
+        // delete specific tool
+        app.delete('/tool/:id', verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await toolsCollection.deleteOne(filter);
+            res.send(result)
+        });
         // get by id api
         app.get('/tools/:id', async (req, res) => {
             const id = req.params.id;
@@ -173,19 +180,21 @@ async function run() {
             const purchase = await toolsCollection.findOne(query);
             res.send(purchase);
         });
-
+        // create order api
         app.post('/order', async (req, res) => {
             const order = req.body;
             const query = { productName: order.productName, email: order.email, quantity: order.quantity, totalPrice: order.totalPrice };
             const result = await orderCollection.insertOne(query);
             res.send(result);
         });
+        // create review
         app.post('/review', async (req, res) => {
             const review = req.body;
             const query = { email: review.email, image: review.image, name: review.name, description: review.description, rating: review.rating };
             const result = await reviewCollection.insertOne(query);
             res.send(result);
         });
+        // show all review
         app.get('/reviews', async (req, res) => {
             const reviews = await reviewCollection.find().toArray();
             res.send(reviews.reverse());
