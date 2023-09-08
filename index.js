@@ -32,7 +32,7 @@ function verifyJWT(req, res, next) {
 // api
 async function run() {
     try {
-        await client.connect();
+       // await client.connect();
         const toolsCollection = client.db('Power_Tools').collection('Tools');
         const usersCollection = client.db('Power_Tools').collection('users');
         const orderCollection = client.db('Power_Tools').collection('orders');
